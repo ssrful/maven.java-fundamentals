@@ -8,13 +8,13 @@ pipeline {
     stages {
         stage('SCM Checkout') {
             steps {
-                sh 'git clone https://github.com/ssrful/maven.java-fundamentals.git'
+                sh 'git clone https://github.com/ssrful/maven.java-fundamentals.git'.JenkinsFile
             }
         }
 
         stage('Compile-Package') {
             steps {
-                def mvnHome = tool name: 'maven-3', type: 'maven'
+                def mvnHome = tool name: 'Maven_3', type: 'maven'
                 sh "${mvnHome}/bin/mvn/package"
             }
         }

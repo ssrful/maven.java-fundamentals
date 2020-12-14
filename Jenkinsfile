@@ -2,7 +2,7 @@ pipeline {
   agent {
         docker {
             image 'maven:3-alpine'
-            args '-u root'
+            args '-v /root/.m2:/root/.m2'
         }
   }
   stages {
@@ -19,7 +19,7 @@ pipeline {
          echo 'Compile Package'
          def mvnHome = tool name: 'maven3.6.3', type: 'maven'
          sh "${mvnHome}/bin/mvn package -Dmaven.test.failure.ignore=true"
-          }
+         }
       }
     }
   }
@@ -27,7 +27,7 @@ pipeline {
                 // If Maven was able to run the tests, even if some of the test
                 // failed, record the test results and archive the jar file.
                 success {
-                    junit '**/target/surefire-reports/TEST-*.xml'
+                    junit '**/target/*.xml'
                     archiveArtifacts 'target/*.jar'
                 }
             }

@@ -1,24 +1,27 @@
 pipeline {
-    agent {
-        docker {
-            image 'maven:3-alpine' 
-            args '-v /root/.m2:/root/.m2' 
+  agent any
+  stages {
+  stage('Stage 1') {
+      steps {
+        script {
+          echo 'Stage 1'
         }
+      }
+      }
+  stage('Compile Package') {
+      steps {
+        script {
+         echo 'Compile Package'
+         def mvnHome = tool name: 'maven3.6.3', type: 'maven'
+         sh "${mvnHome}/bin/mvn"
+          }
+      }
     }
-    stages {
-        stage('SCM Checkout') {
-            steps {
-                sh 'git clone https://github.com/Kari-sad/maven.java-fundamentals'
+  }
+  post {
+                success {
+                    junit '**/target/surefire-reports/TEST-*.xml'
+                    archiveArtifacts 'target/*.jar'
+                }
             }
-        }
-
-        stage('Compile-Package') {
-		   steps {
-                	script{
-				def mvnHome = tool name: 'maven-3', type: 'maven'
-				sh "${mvnHome}/bin/mvn/package"
-		}
-            }
-        }
-    }
-}
+} 

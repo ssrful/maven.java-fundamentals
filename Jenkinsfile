@@ -1,35 +1,39 @@
 pipeline {
-  agent {
+    agent none
+    /*
         docker {
             image 'maven:3-alpine'
-            args '-u root'
-            //'-v /root/.m2:/root/.m2'
+            //args '-v /root/.m2:/root/.m2'
+            //args '-u root'
+            //args '-v $HOME/.m2:/root/.m2'
         }
-  }
-  stages {
-  stage('Stage 1') {
-      steps {
-        script {
-          echo 'Stage 1'
-        }
-      }
-      }
-  stage('Compile Package') {
-      steps {
-        script {
-         echo 'Compile Package'
-         def mvnHome = tool name: 'maven3.6.3', type: 'maven'
-         sh "${mvnHome}/bin/mvn package -Dmaven.test.failure.ignore=true"
-         }
-      }
     }
-  }
-  post {
-                // If Maven was able to run the tests, even if some of the test
-                // failed, record the test results and archive the jar file.
-                success {
-                    junit '**/target/*.xml'
-                    archiveArtifacts 'target/*.jar'
+    */
+    stages {
+
+        stage('SCM Checkout') {
+            steps {
+                sh 'git clone https://github.com/ssrful/maven.java-fundamentals.git'
+            }
+        }
+        stage('Compile-Package') {
+            steps {
+                script {
+                    def mvnHome = tool name: 'maven-3', type: 'maven'
+                    sh "${mvnHome}/bin/mvn/package"
                 }
             }
-} 
+        }
+
+        stage('Maven Install') {
+              agent {
+                docker {
+                  image 'maven:3.6.3'
+                }
+              }
+              steps {
+                sh 'mvn -Dmaven.test.failure.ignore=true'
+              }
+        }
+    }
+}
